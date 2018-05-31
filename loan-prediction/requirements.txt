@@ -1,0 +1,7 @@
+Python packages:
+scikit-learn
+pandas
+numpy
+ipython
+matplotlib
+scipy
