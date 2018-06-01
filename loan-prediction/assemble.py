@@ -1,3 +1,7 @@
+import os
+import settings
+import pandas as pd
+
 HEADERS = {
     "Acquisition": [
         "id",
@@ -54,3 +58,30 @@ HEADERS = {
         "principal_forgiveness_balance"
     ]
 }
+
+SELECT = {
+    "Acquisition": HEADERS["Acquisition"],
+    "Performance": [
+        "id",
+        "foreclosure_date"
+    ]
+}
+
+def concatenate(prefix="Acquisition"):
+    files = os.listdir(settings.DATA_DIR)
+    full = []
+    for f in files:
+        if not f.startswith(prefix):
+            continue
+
+        data = pd.read_csv(os.path.join(settings.DATA_DIR, f), sep="|", header=None, names=HEADERS[prefix], index_col=False)
+        data = data[SELECT[prefix]]
+        full.append(data)
+
+    full = pd.concat(full, axis=0)
+
+    full.to_csv(os.path.join(settings.PROCESSED_DIR, "{}.txt".format(prefix)), sep="|", header=SELECT[prefix], index=False)
+
+if __name__ == "__main__":
+    concatenate("Acquisition")
+concatenate("Performance")
